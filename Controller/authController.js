@@ -13,23 +13,20 @@ exports.signup = async (req, res) => {
   // const {name,email,password}=req.body;
   let data = req.body;
   console.log(data, "data");
-    const isExist=await user.findOne({email:data.email});
-    if(!isExist){
-    bcrypt.genSalt(salt,async function(err, salt) {
-      bcrypt.hash(data.password, salt, async function(err, hash) {
-
-      data={...data,password:hash}
-         const createRespose=await user.create(data);
-         console.log(createRespose,"cr");
-      data={...data,password:hash}
-          res.send({data });
+  const isExist = await user.findOne({ email: data.email });
+  if (!isExist) {
+    bcrypt.genSalt(salt, async function (err, salt) {
+      bcrypt.hash(data.password, salt, async function (err, hash) {
+        data = { ...data, password: hash };
+        const createRespose = await user.create(data);
+        console.log(createRespose, "createRespose");
+        data = { ...data, password: hash };
+        res.send({ message: "register sucessfully" });
       });
-  });
-    }
- 
-    else{
-      res.send({error: 'user already exist' });
-    }
+    });
+  } else {
+    res.send({ error: "user already exist" });
+  }
 };
 
 // LOGIN
@@ -66,19 +63,15 @@ exports.login = async (req, res, next) => {
           });
         }
       }
-      
     );
   } else {
     res.send({
       error: "User Not Verified or Invalid Credentials",
       statusCode: 204,
-     
     });
   }
-  
 };
 // GENERATE OTP
-
 
 cron.schedule("* * * * * ", async () => {
   const data = await otp.find({});
@@ -167,7 +160,7 @@ exports.resetPassword = async (req, res, next) => {
           { $set: { password: hash } }
         );
         console.log("NewPassword", updateResponse);
-        res.send({ success: "Password Reset Successfully " ,result: isExist});
+        res.send({ success: "Password Reset Successfully ", result: isExist });
       });
     });
   } else {
